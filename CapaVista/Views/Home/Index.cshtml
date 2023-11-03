@@ -1,0 +1,197 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<link rel="stylesheet" href="~/css/Login.css" />
+<div class="title-container">
+    <h1>EnjoyBook</h1>
+</div>
+
+<div class="modal" id="myModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <!-- Cabecera del Modal -->
+            <div class="modal-header">
+                <h4 class="modal-title">Formulario de Usuario</h4>
+                <button type="button" class="close" data-dismiss="modal" onclick="cerrarModal()">&times;</button>
+            </div>
+
+            <!-- Contenido del Modal (formulario) -->
+            <div class="modal-body">
+                <form id="formularioUsuario">
+                    <div class="form-group">
+                        <label for="nombre">Nombre:</label>
+                        <input type="text" class="form-control" id="nombre" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="apellido">Apellido:</label>
+                        <input type="text" class="form-control" id="apellido" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="nombreUsuario">Nombre de Usuario:</label>
+                        <input type="text" class="form-control" id="nombreUsuario" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="contraseña">Contraseña:</label>
+                        <input type="password" class="form-control" id="contraseña" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email:</label>
+                        <input type="email" class="form-control" id="email" required>
+                    </div>
+                    <div class="form-group visually-hidden">
+                        <label for="fechaNacimiento">Fecha de Nacimiento:</label>
+                        <input type="date" class="form-control" id="fechaNacimiento" >
+                    </div>
+                    <div class="form-group mt-3">
+                        <button type="submit" class="btn btn-success w-100">Guardar Usuario</button>
+
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+<div class="text-center">
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">Iniciar Sesión</div>
+                    <div class="card-body">
+                        <form id="loginForm">
+                            <div class="form-group">
+                                <label>Usuario</label>
+                                <input type="text" class="form-control" id="usuario" name="usuario" required />
+                            </div>
+                            <div class="form-group">
+                                <label for="password">Contraseña</label>
+                                <input type="password" class="form-control" id="password" name="password" required />
+                            </div>
+                            <button type="submit" class="btn btn-outline-success mt-3">Iniciar Sesión</button>
+                        </form>
+                        <button type="button" class="btn btn-primary mt-3" data-toggle="modal" data-target="#myModal" onclick="AbrirModal()">
+                            Nuevo usuario
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+
+    $('#loginForm').submit(async function (event) {
+        // Prevén el comportamiento predeterminado del formulario
+        event.preventDefault();
+
+        // Muestra el spinner cuando se envía el formulario
+        $('#spinner').show();
+
+        // Obtiene los valores del formulario
+        var usuario = $('#usuario').val();
+        var password = $('#password').val();
+
+        // Crea un objeto con las propiedades usuario y password
+        var data = {
+            usuario: usuario,
+            password: password
+        };
+
+        // Realiza una solicitud al servicio para verificar los campos (aquí se usa un ejemplo de URL)
+        fetch('https://localhost:7080/Home/Login', {
+            method: 'POST',
+            body: JSON.stringify(data), // Envía el objeto como JSON
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                // Oculta el spinner después de que se completa la operación
+                $('#spinner').hide();
+                if (data == "Ok") {
+                    window.location.href = "https://localhost:7080/Home/Menu"
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: `${data}`
+                    });
+                }
+
+            })
+    });
+
+
+    function AbrirModal() {
+        $('#myModal').modal('show');
+    }
+    // Función para cerrar el modal
+    function cerrarModal() {
+        $('#myModal').modal('hide');
+    }
+
+    /************************************************************************************
+     * 
+     * Agrega usuarios
+     * 
+     ****************************************************************************************/
+
+    $('#formularioUsuario').submit(function (event) {
+        // Evita que se recargue la página
+        event.preventDefault();
+
+        // Obtiene los valores del formulario
+        var nombre = $('#nombre').val();
+        var apellido = $('#apellido').val();
+        var nombreUsuario = $('#nombreUsuario').val();
+        var contraseña = $('#contraseña').val();
+        var email = $('#email').val();
+        var fechaNacimiento = $('#fechaNacimiento').val();
+        debugger;
+        // Crea un objeto con los datos del usuario
+        var usuarioData = {
+            IdUsuario: 0,
+            Nombre: nombre,
+            Apellido: apellido,
+            NombreUsuario: nombreUsuario,
+            Contraseña: contraseña,
+            Email: email,
+            FechaNacimiento: 0
+        };
+
+        // Realiza una solicitud AJAX para enviar los datos al controlador
+        $.ajax({
+            url: 'https://localhost:7159/api/Usuario/Agregar',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(usuarioData),
+            success: function (response) {
+                // Maneja la respuesta del controlador aquí
+                console.log(response);
+                // Cierra el modal al guardar el usuario
+                $('#myModal').modal('hide');
+                // Puedes hacer más cosas con la respuesta si es necesario
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Hecho!',
+                    text: `Se ha registrado el usuario!`
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Redireccionar a la misma página
+                        window.location.href = window.location.href;
+                    }
+                });
+            },
+            error: function (error) {
+                // Maneja los errores aquí
+                console.error(error);
+            }
+        });
+    });
+</script>

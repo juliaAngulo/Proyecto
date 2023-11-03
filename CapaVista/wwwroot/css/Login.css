@@ -1,0 +1,37 @@
+﻿body {
+    background-size: cover;
+    height: 100vh;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+/* Estilo para el contenedor del título animado */
+.title-container {
+    text-align: center;
+    font-family: 'Comic Sans MS', cursive, sans-serif;
+    font-size: 36px;
+    color: #8B4513; /* Color madera */
+    margin-top: 100px;
+}
+
+/* Estilo para la animación del título */
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0);
+    }
+
+    40% {
+        transform: translateY(-30px);
+    }
+
+    60% {
+        transform: translateY(-15px);
+    }
+}
+
+/* Aplicar la animación al título y establecer la cursiva */
+.title-container h1 {
+    animation: bounce 2s infinite; /* La animación dura 2 segundos y se repite infinitamente */
+    font-style: italic;
+}

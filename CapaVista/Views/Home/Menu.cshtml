@@ -1,0 +1,324 @@
+﻿@{
+    ViewData["Title"] = "Libros en plataforma";
+}
+<div style="position: fixed; right:10px; bottom:10px; height:30px; text-align:center; width:45px; background-color:red; display:flex; align-items:center; justify-content:center; border-radius:100%;">
+    <a href="https://localhost:7080/Home/CerrarSesion"><i class="fa-solid fa-right-from-bracket"></i></a>
+</div>
+
+<div class="d-flex justify-content-sm-center">
+    <h1>@ViewData["Title"]</h1>
+</div>
+
+
+<!-- Botón para abrir el modal -->
+
+<div class="d-flex justify-content-sm-around mt-5 mb-5">
+    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#myModal">
+        Publicar un nuevo libro <i class="fa-solid fa-upload"></i>
+    </button>
+    <button type="button" class="btn btn-success" onclick="ModificarLibros()">
+        Modificar un libro <i class="fa-solid fa-pen"></i>
+    </button>
+
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Agregar Libro</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Formulario para la entidad Publicar -->
+                <form id="publicarForm">
+                    <div class="container mt-5">
+                        <div class="row justify-content-center">
+                            <div class="form-group col-md-12">
+                                <input type="text" class="form-control visually-hidden " readonly id="idLibro" value="0" placeholder="id">
+                                <input type="text" class="form-control visually-hidden " readonly id="idUsuario" value="@ViewBag.IdUsuario" placeholder="id">
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="nombreLibro">Nombre del Libro</label>
+                                    <input type="text" class="form-control" id="nombreLibro" placeholder="Ingrese el nombre del libro">
+                                </div>
+                                <div class="form-group">
+                                    <label for="autorLibro">Autor del Libro</label>
+                                    <input type="text" class="form-control" id="autorLibro" placeholder="Ingrese el autor del libro">
+                                </div>
+                                <div class="form-group">
+                                    <label for="editorialLibro">Editorial del Libro</label>
+                                    <input type="text" class="form-control" id="editorialLibro" placeholder="Ingrese la editorial del libro">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="numPag">Número de Páginas</label>
+                                    <input type="number" class="form-control" id="numPag" placeholder="Ingrese el número de páginas">
+                                </div>
+                                <div class="form-group">
+                                    <label for="caracteristicas">Características del Libro</label>
+                                    <textarea class="form-control" id="caracteristicas" rows="3" placeholder="Ingrese las características del libro"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        @* <button type="submit" onclick="guardarLibro()" class="btn btn-primary mt-3">Guardar Libro</button> *@
+                    </div>
+                    <button type="submit" class="btn btn-success mt-5 w-100">Guardar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<table id="" class="table table-striped">
+    <thead>
+        <tr>
+            <th>IdPublicar</th>
+            <th>NombreLibro</th>
+            <th>AutorLibro</th>
+            <th>EditorialLibro</th>
+            <th>NumPag</th>
+            <th>Caracteristicas</th>
+            <th>Visualizar</th>
+            <th id="columnaOculta">Modificar</th>
+        </tr>
+    </thead>
+    <tbody id="tablaCuerpo"></tbody>
+</table>
+
+<script>
+    $(document).ready(function () {
+        // Obtén la celda que deseas ocultar por su id
+        var columnaOculta = document.getElementById("columnaOculta");
+
+        // Oculta la columna estableciendo su estilo de visualización a 'none'
+        columnaOculta.style.display = "none";
+
+        var tabla = $('#miTabla').DataTable({
+            searching: true,
+            // Resto de tus opciones para el DataTable
+
+            // Deja la inicialización de los controles de filtro aquí
+        });
+
+
+        // Hacer la solicitud AJAX al servicio y llenar el DataTable
+        $.ajax({
+            url: 'https://localhost:7159/api/Publicar/ListaLibro',
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+
+                // Llenar la tabla con los datos devueltos del servicio
+                $.each(data, function (index, item) {
+                    $('#tablaCuerpo').append('<tr>' +
+                        '<td>' + item.idPublicar + '</td>' +
+                        '<td>' + item.nombreLibro + '</td>' +
+                        '<td>' + item.autorLibro + '</td>' +
+                        '<td>' + item.editorialLibro + '</td>' +
+                        '<td>' + item.numPag + '</td>' +
+                        '<td>' + item.caracteristicas + '</td>' +
+                        `<td ><button class="btn btn-success w-100 " OnClick="ConsultarLibro(${item.idPublicar})" >Alquila o Compra <i class="fa-regular fa-eye"></i></button></td>` +
+                        '</tr>');
+                });
+
+                // Vuelve a cargar el DataTable para que reconozca los nuevos datos
+            },
+            error: function (error) {
+                console.log(error);
+            }
+        });
+    });
+
+    function ConsultarLibro(id) {
+        console.log(id)
+        window.location.href = "https://localhost:7080/Home/Libros?id=" + id;
+    }
+
+
+    // Función para abrir el modal
+    function abrirModal() {
+        $('#myModal').modal('show');
+    }
+
+    // Función para cerrar el modal
+    function cerrarModal() {
+        $('#myModal').modal('hide');
+    }
+
+    // Maneja el evento de envío del formulario
+    $('#publicarForm').submit(function (event) {
+        // Previene el comportamiento predeterminado del formulario
+        event.preventDefault();
+        debugger;
+        if ($('#idLibro').val() == "0") { //si el id es iual a 0 entonces se guarda un nuevo registro, de lo contrario es por que se está modificando
+            // Obtiene los datos del formulario
+            var formData = {
+                NombreLibro: $('#nombreLibro').val(),
+                AutorLibro: $('#autorLibro').val(),
+                EditorialLibro: $('#editorialLibro').val(),
+                NumPag: parseInt($('#numPag').val()),
+                Caracteristicas: $('#caracteristicas').val(),
+                IdUsuario: $('#idUsuario').val()
+            };
+
+            // Envía los datos al servicio API
+            $.ajax({
+                url: 'https://localhost:7159/api/Publicar/Agregar',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(formData),
+                success: function (response) {
+                    // Cierra el modal después de guardar los datos
+                    cerrarModal();
+                    // Realiza cualquier otra acción que necesites después de guardar los datos
+                    console.log('Libro guardado:');
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Hecho!',
+                        text: `Se ha guardado el libro`
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            // Redireccionar a la misma página
+                            window.location.href = window.location.href;
+                        }
+                    });
+                },
+                error: function (error) {
+                    console.error('Error al guardar el libro:', error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error!',
+                        text: `Error al guardar el libro`
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            // Redireccionar a la misma página
+                            window.location.href = window.location.href;
+                        }
+                    });
+                }
+            });
+        } else {
+            // Obtiene los datos del formulario
+            var formData = {
+                IdPublicar: $('#idLibro').val(),
+                NombreLibro: $('#nombreLibro').val(),
+                AutorLibro: $('#autorLibro').val(),
+                EditorialLibro: $('#editorialLibro').val(),
+                NumPag: parseInt($('#numPag').val()),
+                Caracteristicas: $('#caracteristicas').val(),
+                IdUsuario: $('#idUsuario').val()
+            };
+
+            // Envía los datos al servicio API
+            $.ajax({
+                url: 'https://localhost:7159/api/Publicar/Actualizar',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(formData),
+                success: function (response) {
+                    // Cierra el modal después de guardar los datos
+                    cerrarModal();
+                    // Realiza cualquier otra acción que necesites después de guardar los datos
+                    console.log('Libro Act:');
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Hecho!',
+                        text: `Se ha actualizado el libro`
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            // Redireccionar a la misma página
+                            window.location.href = window.location.href;
+                        }
+                    });
+                },
+                error: function (error) {
+                    console.error('Error al guardar el libro:', error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error!',
+                        text: `Error al actualizar el libro`
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            // Redireccionar a la misma página
+                            window.location.href = window.location.href;
+                        }
+                    });
+                }
+            });
+        }
+
+    });
+
+    function ModificarLibros() {
+        // Hacer la solicitud AJAX al servicio y llenar el DataTable
+        $.ajax({
+            url: 'https://localhost:7159/api/Publicar/ListaLibrosAutor?id=@ViewBag.IdUsuario',
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                $('#tablaCuerpo').html("");
+
+                // Llenar la tabla con los datos devueltos del servicio
+                $.each(data, function (index, item) {
+
+                    $('#tablaCuerpo').append('<tr>' +
+                        '<td>' + item.idPublicar + '</td>' +
+                        '<td>' + item.nombreLibro + '</td>' +
+                        '<td>' + item.autorLibro + '</td>' +
+                        '<td>' + item.editorialLibro + '</td>' +
+                        '<td>' + item.numPag + '</td>' +
+                        '<td>' + item.caracteristicas + '</td>' +
+                        `<td ><button class="btn btn-success w-100 " OnClick="ConsultarLibro(${item.idPublicar})" >Alquila o Compra <i class="fa-regular fa-eye"></i></button></td>` +
+                        `<td ><button class="btn btn-info w-100 " OnClick="ModificaLibro(${item.idPublicar})" ><i class="fa-solid fa-pen"></i></button></td>` +
+
+                        '</tr>');
+                });
+
+                // Vuelve a cargar el DataTable para que reconozca los nuevos datos
+            },
+            error: function (error) {
+                console.log(error);
+            }
+        });
+    }
+
+    function ModificaLibro(idLibro) {
+        // Obtén el formulario y el botón de guardar
+        const publicarForm = document.getElementById("publicarForm");
+        const guardarButton = document.querySelector("button[type='submit']");
+
+        event.preventDefault(); // Evita que el formulario se envíe automáticamente
+
+        // Realiza la solicitud al servicio
+        fetch(`https://localhost:7159/api/Publicar/ListaLibroEspecifico?id=${idLibro}`)
+            .then(response => response.json())
+            .then(data => {
+
+                // Verifica si se obtuvieron datos
+                if (data && data.length > 0) {
+                    const libro = data[0]; // Suponiendo que obtienes solo un libro, ajusta según tu lógica
+
+                    // Llena los campos del formulario con los datos del libro
+                    document.getElementById("idLibro").value = libro.idPublicar;
+                    document.getElementById("nombreLibro").value = libro.nombreLibro;
+                    document.getElementById("autorLibro").value = libro.autorLibro;
+                    document.getElementById("editorialLibro").value = libro.editorialLibro;
+                    document.getElementById("numPag").value = libro.numPag;
+                    document.getElementById("caracteristicas").value = libro.caracteristicas;
+                    abrirModal();
+                } else {
+                    // No se encontraron libros para el usuario
+                    console.log("No se encontraron libros para el usuario.");
+                }
+            })
+            .catch(error => {
+                console.error("Error al obtener los datos del servicio:", error);
+            });
+
+    }
+</script>

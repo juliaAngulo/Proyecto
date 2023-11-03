@@ -1,0 +1,710 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+<div class="d-flex justify-content-sm-center">
+    <h1>@ViewBag.NombreLibro</h1>
+</div>
+<div style="position: fixed; right:10px; bottom:10px; height:30px; text-align:center; width:45px; background-color:red; display:flex; align-items:center; justify-content:center; border-radius:100%;">
+    <a href="https://localhost:7080/Home/CerrarSesion"><i class="fa-solid fa-right-from-bracket"></i></a>
+</div>
+<div class="d-flex justify-content-around mb-5">
+    <!-- Botón 1 - Llama al método para abrir el Modal 1 -->
+    <button type="button" class="btn btn-success" onclick="abrirModal('modal1')">Alquilar Libro <i class="fa-solid fa-clock"></i></button>
+
+    <!-- Botón 2 - Llama al método para abrir el Modal 2 -->
+    <button type="button" class="btn btn-success" onclick="abrirModal('modal2')">Comprar Libro <i class="fa-solid fa-cart-shopping"></i></button>
+
+    <button type="button" class="btn btn-success" onclick="historico()">
+        Modificar alquileres <i class="fa-solid fa-pen"></i>
+    </button>
+</div>
+
+<div class="d-flex justify-content-sm-center bg-dark bg-opacity-50" style="color:green;">
+    <h1>Libros alquilados <i class="fa-solid fa-clock"></i></h1>
+</div>
+<div class=" display border-success mb-5">
+    <table id="" class=" display border-success table table-striped">
+        <thead>
+            <tr>
+                <th>Id </th>
+                <th>Nombre</th>
+                <th>Departamento</th>
+                <th>Municipio</th>
+                <th>Barrio</th>
+                <th>Dirección</th>
+                <th>Código Postal</th>
+                <th>Días</th>
+                <th>Cuenta</th>
+                <th>Id Usuario</th>
+                <th>Id Libro</th>
+                <th id="columnaOculta">Modificar</th>
+            </tr>
+        </thead>
+        <tbody id="tablaCuerpo"></tbody>
+    </table>
+</div>
+<div class="d-flex justify-content-sm-center bg-dark bg-opacity-50" style="color:green;">
+    <h1>Libros comprados <i class="fa-solid fa-cart-shopping"></i></h1>
+</div>
+<div class=" display border-success mt-5">
+    <table id="" class="display border-success table table-striped">
+        <thead>
+            <tr>
+                <th>IdComprar</th>
+                <th>Nombre</th>
+                <th>Departamento</th>
+                <th>Municipio</th>
+                <th>Barrio</th>
+                <th>Direccion</th>
+                <th>CodigoPostal</th>
+                <th>NumCuenta</th>
+                <th>IdUsuario</th>
+                <th>IdLibro</th>
+                
+            </tr>
+        </thead>
+        <tbody id="tablaCuerpoCompras"></tbody>
+    </table>
+</div>
+<!--@* <th id="columnaOculta2">Modificar</th> *@-->
+<!-- Modal 1 -->
+<!-- Alquilar -->
+<div class="modal" id="modal1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <!-- Contenido del Modal 1 -->
+            <div class="modal-header">
+                <h4 class="modal-title">Alquilar libro</h4>
+                <button type="button" class="close" data-dismiss="modal" onclick="cerrarModal('modal1')">&times;</button>
+            </div>
+            <div class="modal-body">
+
+                <div>
+                    <div class="container mt-5">
+                        <div class="row justify-content-center">
+                            <div class="col-md-6">
+                                <input type="text" class="form-control  visually-hidden" readonly id="idAlquilarModifica" value="0" placeholder="id">
+                                <div class="form-group">
+                                    <label for="nombre">Nombre</label>
+                                    <input type="text" class="form-control" id="nombre" placeholder="Ingrese su nombre">
+                                </div>
+                                <div class="form-group">
+                                    <label for="departamento">Departamento</label>
+                                    <input type="text" class="form-control" id="departamento" placeholder="Ingrese el departamento">
+                                </div>
+                                <div class="form-group">
+                                    <label for="municipio">Municipio</label>
+                                    <input type="text" class="form-control" id="municipio" placeholder="Ingrese el municipio">
+                                </div>
+                                <div class="form-group">
+                                    <label for="barrio">Barrio</label>
+                                    <input type="text" class="form-control" id="barrio" placeholder="Ingrese el barrio">
+                                </div>
+                                <div class="form-group">
+                                    <label for="direccion">Dirección</label>
+                                    <input type="text" class="form-control" id="direccion" placeholder="Ingrese la dirección">
+                                </div>
+
+                            </div>
+                            <div class="col-md-6">
+
+                                <div class="form-group">
+                                    <label for="numDias">Número de Días</label>
+                                    <input type="number" class="form-control" id="numDias" placeholder="Ingrese el número de días">
+                                </div>
+                                <div class="form-group">
+                                    <label for="numCuenta">Número de Cuenta</label>
+                                    <input type="number" class="form-control" id="numCuenta" placeholder="Ingrese el número de cuenta">
+                                </div>
+                                <div class="form-group">
+                                    <label for="codigoPostal">Código Postal</label>
+                                    <input type="text" class="form-control" id="codigoPostal" placeholder="Ingrese el código postal">
+                                </div>
+                                <div class="form-group">
+                                    <label for="idUsuario">ID Usuario</label>
+                                    <input type="number" value="@ViewBag.IdUsuario" readonly class="form-control" id="idUsuario" placeholder="Ingrese el ID del usuario">
+                                </div>
+                                <div class="form-group">
+                                    <label for="idLibro">ID Libro</label>
+                                    <input type="number" class="form-control" id="idLibro" value="@ViewBag.Id" readonly placeholder="Ingrese el ID del libro">
+                                </div>
+
+                            </div>
+                            <button type="submit" onclick="crearAlquiler()" class="btn btn-success m-3 w-100">Enviar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="cerrarModal('modal1')">Cerrar</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- Modal 2 -->
+<!--comprar-->
+<div class="modal" id="modal2">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <!-- Contenido del Modal 2 -->
+            <div class="modal-header">
+                <h4 class="modal-title">Comprar libro</h4>
+                <button type="button" class="close" data-dismiss="modal" onclick="cerrarModal('modal2')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <div class="container mt-5">
+                        <div class="row justify-content-center">
+                            <div class="col-md-6">
+                                <input type="text" class="form-control visually-hidden " readonly id="idComprar" value="0" placeholder="id">
+
+                                <div class="form-group">
+                                    <label for="nombre">Nombre</label>
+                                    <input type="text" class="form-control" id="Comprarnombre" placeholder="Ingrese su nombre">
+                                </div>
+                                <div class="form-group">
+                                    <label for="departamento">Departamento</label>
+                                    <input type="text" class="form-control" id="Comprardepartamento" placeholder="Ingrese el departamento">
+                                </div>
+                                <div class="form-group">
+                                    <label for="municipio">Municipio</label>
+                                    <input type="text" class="form-control" id="Comprarmunicipio" placeholder="Ingrese el municipio">
+                                </div>
+                                <div class="form-group">
+                                    <label for="barrio">Barrio</label>
+                                    <input type="text" class="form-control" id="Comprarbarrio" placeholder="Ingrese el barrio">
+                                </div>
+                                <div class="form-group">
+                                    <label for="direccion">Dirección</label>
+                                    <input type="text" class="form-control" id="Comprardireccion" placeholder="Ingrese la dirección">
+                                </div>
+
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="codigoPostal">Código Postal</label>
+                                    <input type="text" class="form-control" id="ComprarcodigoPostal" placeholder="Ingrese el código postal">
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="numCuenta">Número de Cuenta</label>
+                                    <input type="number" class="form-control" id="ComprarnumCuenta" placeholder="Ingrese el número de cuenta">
+                                </div>
+                                <div class="form-group">
+                                    <label for="idUsuario">ID Usuario</label>
+                                    <input type="number" class="form-control" id="CompraridUsuario" value="@ViewBag.IdUsuario" readonly placeholder="Ingrese el ID del usuario">
+                                </div>
+                                <div class="form-group">
+                                    <label for="idLibro">ID Libro</label>
+                                    <input type="number" class="form-control" id="CompraridLibro" value="@ViewBag.Id" readonly placeholder="Ingrese el ID del libro">
+                                </div>
+                            </div>
+                            <button type="submit" onclick="crearCompra()" class="btn btn-success m-4 w-100">Enviar</button>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="cerrarModal('modal2')">Cerrar</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+
+    /***************************************************************************************************************************
+     *
+     * Establece datos de las tablas
+     *
+     ***************************************************************************************************************************/
+    document.addEventListener('DOMContentLoaded', function () {
+        // Obtén la celda que deseas ocultar por su id
+        var columnaOculta = document.getElementById("columnaOculta");
+
+        // Oculta la columna estableciendo su estilo de visualización a 'none'
+        columnaOculta.style.display = "none";
+        // // Obtén la celda que deseas ocultar por su id
+        // var columnaOculta2 = document.getElementById("columnaOculta2");
+
+        // // Oculta la columna estableciendo su estilo de visualización a 'none'
+        // columnaOculta2.style.display = "none";
+
+        var id = @ViewBag.id;
+        var tabla = $('#miTabla').DataTable({
+            searching: true
+            // Resto de tus opciones para el DataTable
+
+            // Deja la inicialización de los controles de filtro aquí
+        });
+
+        // Hacer la solicitud AJAX al servicio y llenar el DataTable
+        $.ajax({
+            url: `https://localhost:7159/api/Alquilar/Alquilados?id=${id}`,
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                // Llenar la tabla con los datos devueltos del servicio
+                $.each(data, function (index, item) {
+                    $('#tablaCuerpo').append('<tr>' +
+                        '<td>' + item.idAlquilar + '</td>' +
+                        '<td>' + item.nombre + '</td>' +
+                        '<td>' + item.departamento + '</td>' +
+                        '<td>' + item.municipio + '</td>' +
+                        '<td>' + item.barrio + '</td>' +
+                        '<td>' + item.direccion + '</td>' +
+                        '<td>' + item.codigoPostal + '</td>' +
+                        '<td>' + item.numDias + '</td>' +
+                        '<td>' + item.numCuenta + '</td>' +
+                        '<td>' + item.idUsuario + '</td>' +
+                        '<td>' + item.idLibro + '</td>' +
+                        '</tr>');
+                });
+
+                // Vuelve a cargar el DataTable para que reconozca los nuevos datos
+            },
+            error: function (error) {
+                console.log(error);
+            }
+        });
+
+        var tabla = $('#dataTable').DataTable({
+            searching: true
+            // Resto de tus opciones para el DataTable
+
+            // Deja la inicialización de los controles de filtro aquí
+        });
+        // Hacer la solicitud AJAX al servicio y llenar el DataTable de la
+        $.ajax({
+            url: `https://localhost:7159/api/Comprar/Comprados?id=${id}`,
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                // Llenar la tabla con los datos devueltos del servicio
+                $.each(data, function (index, item) {
+                    $('#tablaCuerpoCompras').append('<tr>' +
+                        '<td>' + item.idComprar + '</td>' +
+                        '<td>' + item.nombre + '</td>' +
+                        '<td>' + item.departamento + '</td>' +
+                        '<td>' + item.municipio + '</td>' +
+                        '<td>' + item.barrio + '</td>' +
+                        '<td>' + item.direccion + '</td>' +
+                        '<td>' + item.codigoPostal + '</td>' +
+                        '<td>' + item.numCuenta + '</td>' +
+                        '<td>' + item.idUsuario + '</td>' +
+                        '<td>' + item.idLibro + '</td>' +
+                        '</tr>');
+                });
+
+                // Vuelve a cargar el DataTable para que reconozca los nuevos datos
+            },
+            error: function (error) {
+                console.log(error);
+            }
+        });
+    });
+
+
+    /***************************************************************************************************************************
+     *
+     * Creamos un nuevo alquiler
+     *
+     ***************************************************************************************************************************/
+
+    function crearAlquiler() {
+        // Obtén los valores del formulario
+        var id = document.getElementById("idAlquilarModifica").value;
+        var nombre = document.getElementById("nombre").value;
+        var departamento = document.getElementById("departamento").value;
+        var municipio = document.getElementById("municipio").value;
+        var barrio = document.getElementById("barrio").value;
+        var direccion = document.getElementById("direccion").value;
+        var codigoPostal = document.getElementById("codigoPostal").value;
+        var numDias = document.getElementById("numDias").value;
+        var numCuenta = document.getElementById("numCuenta").value;
+        var idUsuario = document.getElementById("idUsuario").value;
+        var idLibro = document.getElementById("idLibro").value;
+        debugger
+        if (id == "0") {
+            // Crea un objeto con los valores del formulario
+            var alquilarData = {
+                IdAlquilar: id,
+                Nombre: nombre,
+                Departamento: departamento,
+                Municipio: municipio,
+                Barrio: barrio,
+                Direccion: direccion,
+                CodigoPostal: codigoPostal,
+                NumDias: numDias,
+                NumCuenta: numCuenta,
+                IdUsuario: idUsuario,
+                IdLibro: idLibro
+            };
+
+            // Realiza una solicitud AJAX para enviar los datos al controlador
+            $.ajax({
+                url: 'https://localhost:7159/api/Alquilar/Agregar',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(alquilarData),
+                success: function (response) {
+                    // Maneja la respuesta del controlador aquí
+                    console.log(response);
+                    if (response == "Ok") {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Hecho!',
+                            text: `Se ha alquilado el libro @ViewBag.NombreLibro`
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                // Redireccionar a la misma página
+                                window.location.href = window.location.href;
+                            }
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error!',
+                            text: `No se ha podido alquilar el libro @ViewBag.NombreLibro`
+                        });
+                    }
+                },
+                error: function (error) {
+                    // Maneja los errores aquí
+                    console.error(error);
+                }
+            });
+        } else {
+            // Crea un objeto con los valores del formulario
+            var alquilarData = {
+                IdAlquilar: id,
+                Nombre: nombre,
+                Departamento: departamento,
+                Municipio: municipio,
+                Barrio: barrio,
+                Direccion: direccion,
+                CodigoPostal: codigoPostal,
+                NumDias: numDias,
+                NumCuenta: numCuenta,
+                IdUsuario: idUsuario,
+                IdLibro: idLibro
+            };
+
+            // Realiza una solicitud AJAX para enviar los datos al controlador
+
+
+            // Realiza una solicitud AJAX para enviar los datos al controlador
+            $.ajax({
+                url: 'https://localhost:7159/api/Alquilar/Actualizar',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(alquilarData),
+                success: function (response) {
+                    // Maneja la respuesta del controlador aquí
+                    console.log(response);
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Hecho!',
+                        text: `Se ha Actualizado el alquiler`
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            // Redireccionar a la misma página
+                            window.location.href = window.location.href;
+                        }
+                    });
+                },
+                error: function (error) {
+                    // Maneja los errores aquí
+                    console.error(error);
+                }
+            });
+        }
+    }
+
+
+    /***************************************************************************************************************************
+    *
+    * Creamos una nueva compra
+    *
+    ***************************************************************************************************************************/
+    function crearCompra() {
+        // Obtener los valores de los campos del formulario
+        var id = document.getElementById("idComprar").value;
+        var nombre = document.getElementById("Comprarnombre").value;
+        var departamento = document.getElementById("Comprardepartamento").value;
+        var municipio = document.getElementById("Comprarmunicipio").value;
+        var barrio = document.getElementById("Comprarbarrio").value;
+        var direccion = document.getElementById("Comprardireccion").value;
+        var codigoPostal = document.getElementById("ComprarcodigoPostal").value;
+        var numCuenta = document.getElementById("ComprarnumCuenta").value;
+        var idUsuario = document.getElementById("CompraridUsuario").value;
+        var idLibro = document.getElementById("CompraridLibro").value;
+        if (id == "0") {
+            // Crear un objeto con los valores del formulario
+            var compraData = {
+                IdComprar: id,
+                Nombre: nombre,
+                Departamento: departamento,
+                Municipio: municipio,
+                Barrio: barrio,
+                Direccion: direccion,
+                CodigoPostal: codigoPostal,
+                NumCuenta: numCuenta,
+                idUsuario: idUsuario,
+                idLibro: idLibro
+            };
+
+            // Realiza una solicitud AJAX para enviar los datos al controlador
+            $.ajax({
+                url: 'https://localhost:7159/api/Comprar/Agregar',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(compraData),
+                success: function (response) {
+                    // Maneja la respuesta del controlador aquí
+                    console.log(response);
+                    if (response == "Ok") {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Hecho!',
+                            text: `Se ha comprado el libro @ViewBag.NombreLibro`
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                // Redireccionar a la misma página
+                                window.location.href = window.location.href;
+                            }
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error!',
+                            text: `No se ha podido comprar el libro @ViewBag.NombreLibro`
+                        });
+                    }
+                },
+                error: function (error) {
+                    // Maneja los errores aquí
+                    console.error(error);
+                }
+            });
+        } else {
+            // Crear un objeto con los valores del formulario
+            var compraData = {
+                IdComprar: id,
+                Nombre: nombre,
+                Departamento: departamento,
+                Municipio: municipio,
+                Barrio: barrio,
+                Direccion: direccion,
+                CodigoPostal: codigoPostal,
+                NumCuenta: numCuenta,
+                idUsuario: idUsuario,
+                idLibro: idLibro
+            };
+
+            // Realiza una solicitud AJAX para enviar los datos al controlador
+            $.ajax({
+                url: 'https://localhost:7159/api/Comprar/Agregar',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(compraData),
+                success: function (response) {
+                    // Maneja la respuesta del controlador aquí
+                    console.log(response);
+                    if (response == "Ok") {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Hecho!',
+                            text: `Se ha comprado el libro @ViewBag.NombreLibro`
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                // Redireccionar a la misma página
+                                window.location.href = window.location.href;
+                            }
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error!',
+                            text: `No se ha podido comprar el libro @ViewBag.NombreLibro`
+                        });
+                    }
+                },
+                error: function (error) {
+                    // Maneja los errores aquí
+                    console.error(error);
+                }
+            });
+        }
+
+
+    }
+
+    // Función para abrir un modal por su ID
+    function abrirModal(modalId) {
+        $('#' + modalId).modal('show');
+    }
+
+    function cerrarModal(modalId) {
+        $('#' + modalId).modal('hide');
+    }
+
+
+    /***************************************************************************************************************************
+    *
+    * Consulta compras y alquileres propios del usuario
+    *
+    ***************************************************************************************************************************/
+    function historico() {
+        
+        var Usuario = @ViewBag.IdUsuario;
+        var Libro = @ViewBag.Id;
+        // Hacer la solicitud AJAX al servicio y llenar el DataTable
+        $('#tablaCuerpo').html("");
+        $.ajax({
+            url: `https://localhost:7159/api/Alquilar/AlquiladosPersonal?idUsuario=${Usuario}&idLibro=${Libro}`,
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                // Llenar la tabla con los datos devueltos del servicio
+                $.each(data, function (index, item) {
+                    $('#tablaCuerpo').append('<tr>' +
+                        '<td>' + item.idAlquilar + '</td>' +
+                        '<td>' + item.nombre + '</td>' +
+                        '<td>' + item.departamento + '</td>' +
+                        '<td>' + item.municipio + '</td>' +
+                        '<td>' + item.barrio + '</td>' +
+                        '<td>' + item.direccion + '</td>' +
+                        '<td>' + item.codigoPostal + '</td>' +
+                        '<td>' + item.numDias + '</td>' +
+                        '<td>' + item.numCuenta + '</td>' +
+                        '<td>' + item.idUsuario + '</td>' +
+                        '<td>' + item.idLibro + '</td>' +
+                        `<td ><button class="btn btn-info w-100 " OnClick="ModificaAlquiler(${item.idAlquilar})" ><i class="fa-solid fa-pen"></i></button></td>` +
+
+                        '</tr>');
+                });
+
+                // Vuelve a cargar el DataTable para que reconozca los nuevos datos
+            },
+            error: function (error) {
+                console.log(error);
+            }
+        });
+
+        var tabla = $('#dataTable').DataTable({
+            searching: true
+            // Resto de tus opciones para el DataTable
+
+            // Deja la inicialización de los controles de filtro aquí
+        });
+
+
+        $('#tablaCuerpoCompras').html("");
+        // Hacer la solicitud AJAX al servicio y llenar el DataTable de la
+        $.ajax({
+            url: `https://localhost:7159/api/Comprar/CompradosPersonal?idUsuario=${Usuario}&idLibro=${Libro}`,
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                // Llenar la tabla con los datos devueltos del servicio
+                $.each(data, function (index, item) {
+                    $('#tablaCuerpoCompras').append('<tr>' +
+                        '<td>' + item.idComprar + '</td>' +
+                        '<td>' + item.nombre + '</td>' +
+                        '<td>' + item.departamento + '</td>' +
+                        '<td>' + item.municipio + '</td>' +
+                        '<td>' + item.barrio + '</td>' +
+                        '<td>' + item.direccion + '</td>' +
+                        '<td>' + item.codigoPostal + '</td>' +
+                        '<td>' + item.numCuenta + '</td>' +
+                        '<td>' + item.idUsuario + '</td>' +
+                        '<td>' + item.idLibro + '</td>' +
+                        
+                        '</tr>');
+                });
+
+                // Vuelve a cargar el DataTable para que reconozca los nuevos datos
+                //`<td ><button class="btn btn-info w-100 " OnClick="ModificaCompra(${item.idComprar})" ><i class="fa-solid fa-pen"></i></button></td>` +
+            },
+            error: function (error) {
+                console.log(error);
+            }
+        });
+
+    }
+
+
+    function ModificaAlquiler(id) {
+        // Realizar la solicitud AJAX al servicio AlquiladosEspecifico
+        fetch(`https://localhost:7159/api/Alquilar/AlquiladosEspecifico?id=${id}`)
+            .then(response => response.json())
+            .then(data => {
+                // Verificar si se obtuvieron datos
+                if (data && data.length > 0) {
+                    const alquiler = data[0]; // Suponiendo que obtienes solo un alquiler, ajusta según tu lógica
+
+                    // Llenar el formulario con los datos del alquiler
+                    document.getElementById("idAlquilarModifica").value = id;
+                    document.getElementById("nombre").value = alquiler.nombre;
+                    document.getElementById("departamento").value = alquiler.departamento;
+                    document.getElementById("municipio").value = alquiler.municipio;
+                    document.getElementById("barrio").value = alquiler.barrio;
+                    document.getElementById("direccion").value = alquiler.direccion;
+                    document.getElementById("numDias").value = alquiler.numDias;
+                    document.getElementById("numCuenta").value = alquiler.numCuenta;
+                    document.getElementById("codigoPostal").value = alquiler.codigoPostal;
+                    document.getElementById("idUsuario").value = alquiler.idUsuario;
+                    document.getElementById("idLibro").value = alquiler.idLibro;
+                    abrirModal('modal1');
+                } else {
+                    // No se encontraron alquileres para el libro especificado
+                    console.log("No se encontraron alquileres para el libro especificado.");
+                }
+            })
+            .catch(error => {
+                console.error("Error al obtener los datos del servicio:", error);
+            });
+
+    }
+
+
+    function ModificaCompra(id) {
+        // Realizar la solicitud AJAX al servicio CompradosEspecifico
+        fetch(`https://localhost:7159/api/Alquilar/CompradosEspecifico?id=${id}`)
+            .then(response => response.json())
+            .then(data => {
+                // Verificar si se obtuvieron datos
+                if (data && data.length > 0) {
+                    const Comprar = data[0]; // Suponiendo que obtienes solo un alquiler, ajusta según tu lógica
+
+                    // Llenar el formulario con los datos del alquiler
+                    document.getElementById("idComprar").value = Comprar.IdComprar;
+                    document.getElementById("nombre").value = Comprar.nombre;
+                    document.getElementById("departamento").value = Comprar.departamento;
+                    document.getElementById("municipio").value = Comprar.municipio;
+                    document.getElementById("barrio").value = Comprar.barrio;
+                    document.getElementById("direccion").value = Comprar.direccion;
+                    document.getElementById("numCuenta").value = Comprar.numCuenta;
+                    document.getElementById("codigoPostal").value = Comprar.codigoPostal;
+                    document.getElementById("idUsuario").value = Comprar.idUsuario;
+                    document.getElementById("idLibro").value = Comprar.idLibro;
+                    abrirModal('modal2');
+                } else {
+                    // No se encontraron alquileres para el libro especificado
+                    console.log("No se encontraron alquileres para el libro especificado.");
+                }
+            })
+            .catch(error => {
+                console.error("Error al obtener los datos del servicio:", error);
+            });
+    }
+</script>
